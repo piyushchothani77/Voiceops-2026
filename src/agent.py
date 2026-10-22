@@ -34,7 +34,7 @@ if not (DATA_ROOT / "kb").is_dir():
 
 # Import the official dataset tools.
 sys.path.insert(0, str(DATA_ROOT))
-from tools import lookup_order, create_ticket
+from tools.tools import lookup_order, create_ticket
 
 # ============================================================
 # 2. LOAD CURRENT POLICY DOCUMENTS
