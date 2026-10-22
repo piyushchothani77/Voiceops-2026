@@ -6,3 +6,4 @@ numpy
 soundfile
 pydub
 gnani-vachana
+python-dotenv
