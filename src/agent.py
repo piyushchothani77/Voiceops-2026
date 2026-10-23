@@ -147,7 +147,7 @@ def retrieve_policy_context(query, top_k=4):
                 continue
 
             match = re.search(
-                r"(?ms)^## \\[RET-2\\].*?(?=^## \\[RET-3\\]|\\Z)",
+                r"(?ms)^## \[RET-2\].*?(?=^## \[RET-3\]|\Z)",
                 document.get("text", ""),
             )
 
