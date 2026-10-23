@@ -110,8 +110,11 @@ print("VoiceOps agent initialized.")
 # ============================================================
 
 def retrieve_policy_context(query, top_k=4):
+    query_text = str(query)
+    query_lower = query_text.lower()
+
     query_vector = embedding_model.encode(
-        [str(query)],
+        [query_text],
         normalize_embeddings=True,
     )[0]
 
@@ -130,8 +133,38 @@ def retrieve_policy_context(query, top_k=4):
                 "score": score,
             })
 
-    return results
+    # Deterministic guardrail: return-window questions must include RET-2,
+    # the authoritative category table. Semantic retrieval can otherwise
+    # rank the festive-sale exception (RET-8) above the normal return window.
+    return_terms = (
+        "return", "clothing", "apparel", "fashion",
+        "कपड़े", "कपड़", "वापस", "रिटर्न", "जूते", "बैग",
+    )
 
+    if any(term in query_lower for term in return_terms):
+        for document in documents:
+            if document.get("source") != "pol_returns_v4.md":
+                continue
+
+            match = re.search(
+                r"(?ms)^## \\[RET-2\\].*?(?=^## \\[RET-3\\]|\\Z)",
+                document.get("text", ""),
+            )
+
+            if match:
+                ret2_text = match.group(0).strip()
+                if not any(
+                    "[RET-2]" in item["text"] and "15 days" in item["text"]
+                    for item in results
+                ):
+                    results.insert(0, {
+                        "text": ret2_text,
+                        "source": "pol_returns_v4.md",
+                        "score": 1.0,
+                    })
+                break
+
+    return results[:max(top_k, 1)]
 
 # ============================================================
 # 5. CONVERSATION HANDLER
