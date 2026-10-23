@@ -1,0 +1,20 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local dataset and generated artifacts
+Capstone_Project_Dataset_FTTT_2026/
+Capstone_Project_Dataset_FTTT_2026*.zip
+data/
+outputs/
