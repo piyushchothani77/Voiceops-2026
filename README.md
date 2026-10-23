@@ -18,7 +18,9 @@ A voice-enabled customer-support agent built for the VoiceOps 2026 capstone. It 
 - `run.py` — batch audio CLI.
 - `requirements.txt` — Python dependencies.
 - `.env.example` — names of required environment variables (no secrets).
-- `sample_outputs/` — example output schema and instructions.
+- `sample_outputs/` — a representative JSON example and output instructions.
+- `Report.pdf` — project report currently included in the repository.
+- `VoiceOps_Report_Detailed.pdf` — upload the updated detailed report here if required.
 
 ## Requirements
 
