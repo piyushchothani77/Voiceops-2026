@@ -1,0 +1,18 @@
+{
+  "input_audio": "customer_question.wav",
+  "customer_text": "कपड़ों को वापस करने के लिए कितने दिन मिलते हैं",
+  "reply": "कपड़े, जूते और बैग के लिए सामान्य रूप से डिलीवरी की तारीख से 15 दिन (कैलेंडर दिन) के भीतर रिटर्न किया जा सकता है। यदि आपने 1 अक्टूबर से 15 अक्टूबर 2026 के बीच ऑर्डर किया है, तो यह अवधि 30 दिन तक बढ़ सकती है।",
+  "reply_audio": "audio/customer_question_reply.wav",
+  "retrieved_chunks": [
+    {
+      "source": "pol_returns_v4.md"
+    },
+    {
+      "source": "pol_returns_v4.md"
+    },
+    {
+      "source": "00_about_this_knowledge_base.md"
+    }
+  ],
+  "note": "Example based on the successful notebook policy test; regenerate audio and JSON using run.py for an environment-specific output."
+}
