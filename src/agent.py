@@ -138,7 +138,7 @@ def retrieve_policy_context(query, top_k=4):
     # rank the festive-sale exception (RET-8) above the normal return window.
     return_terms = (
         "return", "clothing", "apparel", "fashion",
-        "कपड़े", "कपड़", "वापस", "रिटर्न", "जूते", "बैग",
+        "कपड़े", "कपड़", "कपड़", "वापस", "रिटर्न", "जूते", "बैग",
     )
 
     if any(term in query_lower for term in return_terms):
