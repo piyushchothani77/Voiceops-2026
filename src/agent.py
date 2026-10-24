@@ -748,6 +748,70 @@ def support_turn_v2(session_id, user_message):
                 session_id, msg, reply, _voiceops_evidence((src, text))
             )
 
+    # 3a. Plus membership removes the reverse-pickup fee.
+    fee_question = any(term in low for term in (
+        "pickup fee", "reverse pickup fee", "collection fee", "picking fee"
+    ))
+    plus_member = any(term in low for term in (
+        "plus member", "zentromart plus", "plus membership", "प्लस सदस्य"
+    ))
+    if fee_question and plus_member:
+        ret_src, ret_text = _voiceops_policy_section("RET-6")
+        plus_src, plus_text = _voiceops_policy_section("PLS-2")
+        return _voiceops_special_result(
+            session_id, msg,
+            "No. ZentroMart Plus members pay no reverse pickup fee on returns.",
+            _voiceops_evidence((ret_src, ret_text), (plus_src, plus_text)),
+        )
+
+    # 3b. Late Express orders: apply only the documented fee-credit policy.
+    late_express = (
+        "express" in low
+        and any(term in low for term in (
+            "late", "arrived a day late", "after the promised date",
+            "delayed", "late delivery"
+        ))
+        and any(term in low for term in ("anything back", "compensation", "refund", "credit", "get anything"))
+    )
+    if late_express:
+        src, text = _voiceops_policy_section("DEL-4")
+        return _voiceops_special_result(
+            session_id, msg,
+            "If you paid the ₹79 Express fee, it is credited to your ZentroMart Wallet automatically within 48 hours. ZentroMart Plus members pay no Express fee and therefore receive no credit. No other compensation is offered for late delivery.",
+            _voiceops_evidence((src, text)),
+        )
+
+    # 3c. An order the customer did not place is an account-security escalation.
+    fraud_intent = (
+        any(term in low for term in (
+            "never placed", "never ordered", "didn't place", "did not place",
+            "don't recognise this order", "do not recognize this order",
+            "unauthorised order", "unauthorized order", "unknown order",
+        ))
+        or ("order on my account" in low and "never" in low)
+    )
+    if fraud_intent:
+        src, text = _voiceops_policy_section("ESC-1")
+        ticket = create_ticket(
+            summary=f"Urgent account-security concern: customer reports an order they did not place. Customer message: {msg}",
+            order_id=None,
+            reason="Possible unauthorised order / account-security concern",
+            intent="account_security",
+        )
+        if ticket.get("created") is True:
+            reply = (
+                "That needs urgent attention. I created a support ticket "
+                f"({ticket.get('ticket_id')}) and recommend connecting with a colleague who handles account security."
+            )
+        else:
+            reply = (
+                "That needs urgent attention. I couldn't confirm ticket creation, "
+                "so please contact a colleague who handles account security."
+            )
+        return _voiceops_special_result(
+            session_id, msg, reply, _voiceops_evidence((src, text))
+        )
+
     # 3. Product-aware return eligibility and date-specific electronics exception.
     return_intent = any(
         term in low for term in (
@@ -800,7 +864,12 @@ def support_turn_v2(session_id, user_message):
                 if order_date and date(2026, 10, 1) <= order_date <= date(2026, 10, 15):
                     days = 30
 
-            if days is None:
+            if opened_beauty:
+                reply = (
+                    f"{title} can be returned only if it is unopened with the seal intact. "
+                    "Because it has been opened, it is not eligible for return."
+                )
+            elif days is None:
                 reply = (
                     f"{title} is listed in a category that is not returnable "
                     "for change of mind."
