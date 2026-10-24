@@ -644,7 +644,7 @@ def support_turn_v2(session_id, user_message):
 
         sku = str(product.get("sku", ""))
         title = str(product.get("title", "this product"))
-        months = str(product.get("warranty_months", ""))
+        brand_months = str(product.get("warranty_months", ""))
         assured = str(product.get("assured", "")).strip().lower() in {
             "true", "1", "yes"
         }
@@ -661,18 +661,20 @@ def support_turn_v2(session_id, user_message):
         if assured:
             if hinglish:
                 reply = (
-                    f"Haan, {sku} par ZentroMart Assured ki {months}-month "
-                    "warranty delivery date se milti hai. Claim ke liye app mein My Orders kholen."
+                    f"Haan, {sku} par delivery date se 12-month ZentroMart Assured warranty milti hai. "
+                    f"Catalog mein {brand_months}-month brand warranty bhi listed hai. "
+                    "Claim ke liye app mein My Orders kholen."
                 )
             else:
                 reply = (
-                    f"Yes. {title} ({sku}) has a {months}-month ZentroMart Assured "
-                    "warranty from delivery. Raise the claim in the app under My Orders."
+                    f"Yes. {title} ({sku}) has a 12-month ZentroMart Assured warranty from delivery "
+                    f"plus a {brand_months}-month brand warranty listed in the catalogue. "
+                    "Raise the Assured claim in the app under My Orders."
                 )
         else:
             reply = (
                 f"{title} ({sku}) is not marked as ZentroMart Assured. "
-                f"The catalogue lists a {months}-month brand warranty; "
+                f"The catalogue lists a {brand_months}-month brand warranty; "
                 "contact the manufacturer's service centre for a claim."
             )
         return _voiceops_special_result(session_id, msg, reply, evidence)
@@ -774,7 +776,17 @@ def support_turn_v2(session_id, user_message):
             evidence = _voiceops_evidence(*evidence_items)
             delivery_date = _voiceops_parse_date(msg)
 
-            if (
+            opened_beauty = (
+                category == "beauty_sealed"
+                and any(term in low for term in (
+                    "opened", "open the", "opened it", "unsealed", "broke the seal",
+                    "khola", "khol li", "खोल", "खुला", "सील तोड़"
+                ))
+            )
+
+            if opened_beauty:
+                days = None
+            elif (
                 category == "electronics"
                 and delivery_date is not None
                 and delivery_date < date(2026, 8, 1)
@@ -878,13 +890,23 @@ def support_turn_v2(session_id, user_message):
             [],
         )
 
+    if any(term in low for term in (
+        "pick up my order", "pickup my order", "store pickup",
+        "pick it up from a store", "collect my order from a store",
+    )):
+        return _voiceops_special_result(
+            session_id, msg,
+            "I couldn't find confirmed information about store pickup. I can connect you to a colleague who can confirm the available options.",
+            [],
+        )
+
     # 6. Answer the delivery-attempt question from the dataset policy.
     not_home = (
         ("not home" in low or "not at home" in low or "ghar par nahi" in low)
         and any(x in low for x in ("courier", "delivery", "deliver", "attempt"))
     )
     if not_home:
-        src, text = _voiceops_policy_section("REF-1")
+        src, text = _voiceops_policy_section("DEL-3")
         return _voiceops_special_result(
             session_id, msg,
             "The courier may try delivery up to 3 times. If a prepaid order still isn't delivered, the parcel returns to the warehouse; the refund is initiated when it arrives, usually 7 to 10 calendar days after the last attempt.",
