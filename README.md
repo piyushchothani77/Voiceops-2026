@@ -22,7 +22,7 @@ A voice-enabled customer-support agent built for the VoiceOps 2026 capstone. It 
 - `.env.example` — names of required environment variables (no secrets).
 - `sample_outputs/` — a representative JSON example and output instructions.
 - `report.pdf` — detailed project report covering the design, implementation, testing, limitations, and next steps.
-- 'demo.mp4'-summarative video.
+-`demo.mp4` — summarative video examples
 
 ## Requirements
 
