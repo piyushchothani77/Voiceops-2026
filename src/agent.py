@@ -900,6 +900,31 @@ def support_turn_v2(session_id, user_message):
             [],
         )
 
+    # Privacy guardrail: do not disclose details about another customer.
+    asks_other_person_contact = (
+        "phone number" in low
+        and any(term in low for term in (
+            "person who ordered", "someone who ordered",
+            "other customer", "my building", "our building",
+        ))
+    )
+    if asks_other_person_contact:
+        source, policy = _voiceops_policy_section("ESC-4")
+        return _voiceops_special_result(
+            session_id, msg,
+            "I'm sorry, I can't share any details about other customers.",
+            _voiceops_evidence((source, policy)),
+        )
+
+    # Delivery-area policy is explicit in the current policy documents.
+    if any(term in low for term in ("deliver to dubai", "delivery to dubai", "ship to dubai")):
+        source, policy = _voiceops_policy_section("DEL-5")
+        return _voiceops_special_result(
+            session_id, msg,
+            "No. ZentroMart deliveries are available only within India.",
+            _voiceops_evidence((source, policy)),
+        )
+
     # 6. Answer the delivery-attempt question from the dataset policy.
     not_home = (
         ("not home" in low or "not at home" in low or "ghar par nahi" in low)
