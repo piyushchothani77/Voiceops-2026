@@ -1,6 +1,6 @@
 # VoiceOps 2026 — ZentroMart Voice Support Agent
 
-Repo link:-https://github.com/piyushchothani77/Voiceops-2026
+**Public GitHub repository:** https://github.com/piyushchothani77/Voiceops-2026
 
 A voice-enabled customer-support agent built for the VoiceOps 2026 capstone. It combines Gnani speech-to-text (STT), policy retrieval (RAG), a Groq-hosted language model, and Gnani text-to-speech (TTS).
 
@@ -15,14 +15,14 @@ A voice-enabled customer-support agent built for the VoiceOps 2026 capstone. It 
 
 ## Repository layout
 
-- `VoiceOps.ipynb` — development notebook.
+- `VoiceOps.ipynb` — development notebook (available in the GitHub repository; omitted from the submission ZIP).
 - `src/agent.py` — retrieval and customer-support agent.
 - `run.py` — batch audio CLI.
 - `requirements.txt` — Python dependencies.
 - `.env.example` — names of required environment variables (no secrets).
 - `sample_outputs/` — a representative JSON example and output instructions.
 - `report.pdf` — detailed project report covering the design, implementation, testing, limitations, and next steps.
-- `demo.mp4` — summarative video examples.
+- `demo.mp4` — demonstration of representative voice interactions.
 
 ## Requirements
 
