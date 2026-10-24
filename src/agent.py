@@ -495,7 +495,7 @@ def _voiceops_find_product(message):
     # ASR often spells the four SKU digits as words, e.g.
     # "sku ele-zero zero one to" -> ELE-0012.
     if not sku and re.search(r"\bsku\b", low):
-        prefix_match = re.search(r"\b([a-z]{3})[\s-]+", low)
+        prefix_match = re.search(r"\b(ELE|HOM|BKS|CLO|FSH|BEA|GRO)[\s-]+", low, re.I)
         if prefix_match:
             prefix = prefix_match.group(1).upper()
             tail = low[prefix_match.end():]
